@@ -25,7 +25,8 @@ from google.oauth2.credentials import Credentials
 # ==========================================
 st.set_page_config(page_title="Visor de documentos", page_icon="📄", layout="wide")
 
-SCOPES = ["https://www.googleapis.com/auth/devstorage.read_only"]
+# Sin scopes explícitos: se usan los que concedió el login de gcloud (cloud-platform).
+# Pedir otro scope (p. ej. devstorage.read_only) al renovar da "invalid_scope".
 TOKEN_URI = "https://oauth2.googleapis.com/token"
 CACHE_SEGUNDOS = 300
 
@@ -111,7 +112,7 @@ def cliente_storage() -> storage.Client:
         token_uri=TOKEN_URI,
         client_id=cfg["client_id"],
         client_secret=cfg["client_secret"],
-        scopes=SCOPES,
+        scopes=None,
     )
     return storage.Client(project=st.secrets.get("gcp", {}).get("project_id"), credentials=creds)
 
@@ -213,12 +214,18 @@ except Exception as e:  # token revocado/caducado, red, etc.
         st.error("El acceso de la cuenta del visor caducó. Avisa al administrador para renovar el token.")
     else:
         st.error("No se pudo cargar el documento. Inténtalo de nuevo en unos minutos.")
+    st.caption(f"Detalle técnico: {type(e).__name__}: {str(e)[:200]}")
     st.stop()
 
 nombre = objeto.rsplit("/", 1)[-1]
 st.subheader(nombre)
 
-if tipo == "application/pdf" or nombre.lower().endswith(".pdf"):
+# Muchos archivos del bucket están guardados como application/octet-stream (por eso el
+# navegador los descarga); se decide el tipo por la extensión y se muestran dentro de la app.
+if nombre.lower().endswith(".pdf"):
+    tipo = "application/pdf"
+
+if tipo == "application/pdf":
     st.pdf(contenido, height=900)
 elif tipo.startswith("image/"):
     st.image(contenido)
