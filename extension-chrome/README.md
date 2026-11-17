@@ -14,9 +14,9 @@ https://gcp-recobros.streamlit.app/?doc=https://storage.cloud.google.com/contrat
 
 También redirige los enlaces de `storage.googleapis.com` del mismo bucket.
 
-## 1. Poner la URL de tu app (una vez)
+## 1. URL de la app
 
-En `reglas.json`, reemplaza el nombre de la app (ya configurado: `gcp-recobros`) por el nombre de tu app de Streamlit. Por ejemplo, si tu app es `https://gcp-recobros.streamlit.app`, la línea queda:
+Ya está configurada en `reglas.json` (`https://gcp-recobros.streamlit.app`). Si la app cambia de URL, edita esta línea:
 
 ```json
 "regexSubstitution": "https://gcp-recobros.streamlit.app/?doc=https://storage.cloud.google.com/\\1"
