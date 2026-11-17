@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "Visor de contratos",
+  "description": "Abre los enlaces de contratos de Google Cloud Storage en el visor de Streamlit.",
+  "version": "1.0.0",
+  "permissions": ["declarativeNetRequest"],
+  "host_permissions": [
+    "https://storage.cloud.google.com/*",
+    "https://storage.googleapis.com/*"
+  ],
+  "declarative_net_request": {
+    "rule_resources": [
+      { "id": "reglas", "enabled": true, "path": "reglas.json" }
+    ]
+  }
+}

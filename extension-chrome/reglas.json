@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1,
+    "priority": 1,
+    "action": {
+      "type": "redirect",
+      "redirect": {
+        "regexSubstitution": "https://TU-APP.streamlit.app/?doc=https://storage.cloud.google.com/\\1"
+      }
+    },
+    "condition": {
+      "regexFilter": "^https://storage\\.(?:cloud\\.google|googleapis)\\.com/(contratos_enerweb/[^?#]+)",
+      "resourceTypes": ["main_frame"]
+    }
+  }
+]
