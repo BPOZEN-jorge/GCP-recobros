@@ -5,7 +5,7 @@ App de Streamlit que queda **logueada con un correo que tiene permisos** sobre e
 - **Login único:** inicias sesión una vez con el correo que tiene permisos y su token queda en los secrets de Streamlit.
 - **Enlaces compartibles:** compartes `https://<tu-app>.streamlit.app/?doc=<enlace de GCS>` en lugar del enlace de Google Cloud.
 - **Acceso por IP pública** (`[network] ips_permitidas`), igual que en `lector-cobros`.
-- **Buckets limitados:** solo se sirven los de `[gcp] buckets_permitidos`. La descarga está desactivada por defecto.
+- **Buckets limitados:** solo se sirven los de `[gcp] buckets_permitidos`. Botón "Descargar PDF" activable con `permitir_descarga`.
 - **Nada que configurar en la consola de GCP.**
 
 ## 1. Login único con el correo que tiene permisos

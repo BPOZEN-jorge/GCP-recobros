@@ -217,13 +217,33 @@ except Exception as e:  # token revocado/caducado, red, etc.
     st.caption(f"Detalle técnico: {type(e).__name__}: {str(e)[:200]}")
     st.stop()
 
-nombre = objeto.rsplit("/", 1)[-1]
-st.subheader(nombre)
+partes = objeto.split("/")
+nombre = partes[-1]
 
 # Muchos archivos del bucket están guardados como application/octet-stream (por eso el
 # navegador los descarga); se decide el tipo por la extensión y se muestran dentro de la app.
 if nombre.lower().endswith(".pdf"):
     tipo = "application/pdf"
+
+# Todos los contratos se llaman "contrato.pdf": al descargar se añade la carpeta para distinguirlos
+# (contratos_canalaecorp/O2BD.../contrato.pdf → contrato_O2BD....pdf)
+nombre_descarga = nombre
+if len(partes) > 1:
+    base, punto, ext = nombre.rpartition(".")
+    nombre_descarga = f"{base}_{partes[-2]}{punto}{ext}" if punto else f"{nombre}_{partes[-2]}"
+
+col_titulo, col_boton = st.columns([4, 1], vertical_alignment="center")
+col_titulo.subheader(nombre)
+if st.secrets.get("gcp", {}).get("permitir_descarga", True):
+    col_boton.download_button(
+        "⬇️ Descargar PDF" if tipo == "application/pdf" else "⬇️ Descargar",
+        contenido,
+        file_name=nombre_descarga,
+        mime=tipo or "application/octet-stream",
+        on_click="ignore",  # descarga sin recargar el visor
+        type="primary",
+        width="stretch",
+    )
 
 if tipo == "application/pdf":
     st.pdf(contenido, height=900)
@@ -231,6 +251,3 @@ elif tipo.startswith("image/"):
     st.image(contenido)
 else:
     st.info("Este tipo de archivo no se puede previsualizar.")
-
-if st.secrets.get("gcp", {}).get("permitir_descarga", False):
-    st.download_button("⬇️ Descargar", contenido, file_name=nombre, mime=tipo or None)
