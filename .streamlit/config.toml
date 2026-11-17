@@ -1,0 +1,6 @@
+[server]
+# 28800 s = 8 horas: conserva la sesión si el navegador pierde la conexión un rato.
+disconnectedSessionTTL = 28800
+
+[client]
+toolbarMode = "minimal"
