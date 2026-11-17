@@ -5,7 +5,7 @@
     "action": {
       "type": "redirect",
       "redirect": {
-        "regexSubstitution": "https://TU-APP.streamlit.app/?doc=https://storage.cloud.google.com/\\1"
+        "regexSubstitution": "https://gcp-recobros.streamlit.app/?doc=https://storage.cloud.google.com/\\1"
       }
     },
     "condition": {

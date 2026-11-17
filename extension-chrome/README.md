@@ -9,14 +9,14 @@ https://storage.cloud.google.com/contratos_enerweb/contratos_canalaecorp/OJ8.../
 se abre como:
 
 ```
-https://TU-APP.streamlit.app/?doc=https://storage.cloud.google.com/contratos_enerweb/contratos_canalaecorp/OJ8.../contrato.pdf
+https://gcp-recobros.streamlit.app/?doc=https://storage.cloud.google.com/contratos_enerweb/contratos_canalaecorp/OJ8.../contrato.pdf
 ```
 
 También redirige los enlaces de `storage.googleapis.com` del mismo bucket.
 
 ## 1. Poner la URL de tu app (una vez)
 
-En `reglas.json`, reemplaza `TU-APP` por el nombre de tu app de Streamlit. Por ejemplo, si tu app es `https://gcp-recobros.streamlit.app`, la línea queda:
+En `reglas.json`, reemplaza el nombre de la app (ya configurado: `gcp-recobros`) por el nombre de tu app de Streamlit. Por ejemplo, si tu app es `https://gcp-recobros.streamlit.app`, la línea queda:
 
 ```json
 "regexSubstitution": "https://gcp-recobros.streamlit.app/?doc=https://storage.cloud.google.com/\\1"
