@@ -2,9 +2,10 @@
 Visor de documentos GCP — Streamlit
 --------------------------------------------------------------
 - Bloqueo por IP pública del navegador (misma lógica que "lector-cobros").
-- Una sola cuenta de Google (la del administrador) tiene acceso al bucket.
+- La app queda "logueada" con UN correo que tiene permisos sobre el bucket
+  (login único con `gcloud auth application-default login`, ver login_admin.py).
   Su refresh token vive en los secrets de Streamlit: los usuarios nunca ven
-  correo, contraseña ni token.
+  correo, contraseña ni token, y no necesitan cuenta de Google.
 - El usuario pega el enlace de storage.cloud.google.com (o abre la app con
   ?doc=<enlace>) y ve el PDF dentro de la app.
 - Solo se sirven documentos de los buckets listados en [gcp] buckets_permitidos.

@@ -1,54 +1,58 @@
 # GCP-recobros · Visor de documentos
 
-App de Streamlit para ver documentos de Google Cloud Storage **sin entregar credenciales a los usuarios**.
+App de Streamlit que queda **logueada con un correo que tiene permisos** sobre el bucket. Quien abra el enlace de la app, desde una IP autorizada, ve los documentos **sin cuenta de Google y sin conocer ese correo**.
 
-- El administrador inicia sesión **una sola vez** con la cuenta que tiene acceso al bucket. El refresh token queda en los secrets de Streamlit.
-- Los usuarios pegan el enlace (`https://storage.cloud.google.com/...`) o abren `https://<app>/?doc=<enlace>` y ven el PDF dentro de la app.
-- Acceso restringido por **IP pública** (`[network] ips_permitidas`), igual que en `lector-cobros`.
-- Solo se sirven los buckets de `[gcp] buckets_permitidos`. La descarga está desactivada por defecto (`permitir_descarga`).
+- **Login único:** inicias sesión una vez con el correo que tiene permisos y su token queda en los secrets de Streamlit.
+- **Enlaces compartibles:** compartes `https://<tu-app>.streamlit.app/?doc=<enlace de GCS>` en lugar del enlace de Google Cloud.
+- **Acceso por IP pública** (`[network] ips_permitidas`), igual que en `lector-cobros`.
+- **Buckets limitados:** solo se sirven los de `[gcp] buckets_permitidos`. La descarga está desactivada por defecto.
+- **Nada que configurar en la consola de GCP.**
 
-## 1. Configurar Google Cloud (una vez)
+## 1. Login único con el correo que tiene permisos
 
-1. **APIs y servicios → Biblioteca**: habilita **Cloud Storage API** (normalmente ya viene habilitada).
-2. **APIs y servicios → Pantalla de consentimiento de OAuth**:
-   - Tipo **Interno** si la cuenta es de Google Workspace. Si no, tipo **Externo** y **publícala en Producción**: en modo *Testing* el refresh token caduca a los 7 días.
-   - Ámbito: `https://www.googleapis.com/auth/devstorage.read_only`.
-3. **APIs y servicios → Credenciales → Crear credenciales → ID de cliente de OAuth**:
-   - Tipo de aplicación: **App de escritorio**.
-   - Descarga el JSON y guárdalo junto a este proyecto como `client_secret.json` (está en `.gitignore`).
-4. En el bucket (`contratos_enerweb`) → **Permisos**:
-   - Da a la cuenta del visor el rol **Lector de objetos de almacenamiento** (`roles/storage.objectViewer`).
-   - Quita los correos generales.
-
-## 2. Inicio de sesión único del administrador
+En tu equipo (una sola vez):
 
 ```bash
-pip install google-auth-oauthlib
+winget install Google.CloudSDK
+```
+
+Cierra y vuelve a abrir la terminal, y luego:
+
+```bash
+gcloud auth application-default login
+```
+
+Se abre el navegador: entra con el correo que tiene permisos sobre el bucket. Después:
+
+```bash
 python login_admin.py
 ```
 
-Entra con la cuenta del visor. El script imprime el bloque `[gcp_oauth]`.
+El script imprime el bloque `[gcp_oauth]`.
 
-## 3. Secrets de Streamlit
+## 2. Secrets de Streamlit
 
 Copia `secrets.toml.example` en **Streamlit Cloud → App → Settings → Secrets** y reemplaza `[gcp_oauth]` por el bloque que imprimió `login_admin.py`.
 
-## 4. Desplegar
+## 3. Compartir documentos
 
-En Streamlit Cloud, crea una app a partir de este repositorio con el archivo principal `app.py`.
+Enlace de GCS:
+```
+https://storage.cloud.google.com/contratos_enerweb/contratos_canalaecorp/OJ8DXYS1KMAWDGLN2VA5W4WWQOMMGH7U/contrato.pdf
+```
+Enlace que compartes:
+```
+https://<tu-app>.streamlit.app/?doc=https://storage.cloud.google.com/contratos_enerweb/contratos_canalaecorp/OJ8DXYS1KMAWDGLN2VA5W4WWQOMMGH7U/contrato.pdf
+```
+También se puede abrir la app y pegar el enlace de GCS en el campo de texto.
 
-## Enlaces admitidos
+Enlaces admitidos: `storage.cloud.google.com`, `storage.googleapis.com`, `gs://` y `console.cloud.google.com/storage/browser/_details/...`.
 
-- `https://storage.cloud.google.com/<bucket>/<ruta>`
-- `https://storage.googleapis.com/<bucket>/<ruta>`
-- `gs://<bucket>/<ruta>`
-- `https://console.cloud.google.com/storage/browser/_details/<bucket>/<ruta>`
+## Renovar el login
 
-## Renovar el acceso
-
-Si cambia la contraseña de la cuenta o se revoca el acceso, la app muestra *"El acceso de la cuenta del visor caducó"*. Vuelve a ejecutar `login_admin.py` y actualiza `refresh_token` en los secrets.
+Si cambia la contraseña del correo o se revoca el acceso, la app muestra *"El acceso de la cuenta del visor caducó"*. Repite el paso 1 y actualiza `refresh_token` en los secrets.
 
 ## Limitaciones
 
-- La IP la informa el navegador (ipify), igual que en `lector-cobros`: sirve para filtrar el uso normal, pero un usuario con conocimientos técnicos podría falsearla.
+- La IP la informa el navegador (ipify), igual que en `lector-cobros`: un usuario con conocimientos técnicos podría falsearla.
 - Lo que se muestra en pantalla se puede capturar.
